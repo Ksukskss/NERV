@@ -8,3 +8,35 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Python cache and byte-code
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment and IDEs
+.venv/
+venv/
+env/
+.env
+.vscode/
+.idea/
+
+# Local data files (heavy binaries and SCARDEC unpacks)
+data/fctoptsource_*
+data/*.seed
+data/*.seed.gz
+data/*.tar.gz
+data/iasp91.csv
+data/IASP91.csv
+data/
+.obsidian/
+
+# Keep the data directory tracking but ignore contents if needed
+# (Optional: if you want to keep an empty data folder in git)
+!data/.gitkeep
+
+# System files
+.DS_Store
+Thumbs.db
