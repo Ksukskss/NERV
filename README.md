@@ -1,56 +1,61 @@
-NERV — **N**umerical **E**arth **R**ay **V**isualizer. 
+# NERV — Numerical Earth Ray Visualizer
 
-Sructure
-nerv-seismo/
+## Structure
+
+```text
+NERV/
 │
 ├── data/
-│   ├── fctoptsource_20100227_063411_NEAR_COAST_OF_CENTRAL_CHILE   
-│   └── iasp91.csv                                                  
+│   ├── fctoptsource_20100227_063411_NEAR_COAST_OF_CENTRAL_CHILE
+│   ├── iasp91.csv
+│   └── chil10058.seed
 │
 ├── src/
 │   ├── __init__.py
 │   │
-│   ├── magi/
+│   ├── balthazar/          # THE PROPAGATION PATH ENGINE
 │   │   ├── __init__.py
-│   │   │
-│   │   ├── caspar/          # Задача 1: Географический домен
-│   │   │   ├── __init__.py
-│   │   │   └── geo_calc.py    # Сферическая геометрия, расстояния, азимуты
-│   │   │
-│   │   ├── balthasar/         # Задача 2: Главный фокус №1 (Shooting Ray-Tracer)
-│   │   │   ├── __init__.py
-│   │   │   ├── earth_layers.py# Дискретизация IASP91 на градиентные слои
-│   │   │   └── shooter.py     # Алгоритм пристрелки и вычисление интегралов пути
-│   │   │
-│   │   └── melchior/            # Задача 3: Главный фокус №2 (Convolution & Synthesis)
-│   │       ├── __init__.py
-│   │       ├── radiation.py   # Вспомогательный векторный расчет механизма очага
-│   │       ├── rotation.py    # Вспомогательные матрицы поворота волн на приемнике
-│   │       └── convolve.py    # Мастер-цикл дискретной свертки во временной области
+│   │   ├── geometry.py          # Spherical distance & azimuth calculations
+│   │   └── ray_tracer.py        # Shooting/bisection 1D layer tracer
 │   │
-│   ├── utils/
+│   ├── casper/             # THE COORDINATE & ROTATION ENGINE
 │   │   ├── __init__.py
-│   │   └── scardec_parser.py  # Парсер заголовков и STF-массива из файла
+│   │   ├── source_radiation.py  # Fault vectors and radiation patterns (P, SV, SH)
+│   │   └── receiver_rotation.py # ZRT to ZNE projection matrices
 │   │
-│   └── main.py                 # Запуск терминала NERV (Центральный оркестратор)
-│
+│   ├── melchior/           # THE SIGNAL PROCESSING KERNEL
+│   │   ├── __init__.py
+│   │   └── convolution.py       # Direct time-domain sliding convolution loop
+│   │
+│   └── central_dogma.py         # Main orchestrator running the pipeline loops
 │
 └── README.md
+```
 
-For beginning, need to compare 3 major elements of data. (I think you have been created the project directory =))
-First needs find and download file with earthquakes parameters and STF. 
-For Chile 2010 event:
+## Data Setup
 
-'''
-mkdir data/
+To begin, you need to compare 3 major elements of data. First, find and download the file with earthquake parameters and STF.
+
+### 1. Chile 2010 Event Parameters and STF
+
+```bash
+mkdir -p data/
 cd data/
 curl -LOC - http://scardec.projects.sismo.ipgp.fr/arch/sourcefunction_archive_152924350.tar.gz && tar -xvzf sourcefunction_archive_152924350.tar.gz 
-'''
+```
 
-Next download the SEED or miniSEED file.
-GEOSCOPE network for Chile:
+### 2. SEED / miniSEED Data
 
-'''
+Next, download the SEED or miniSEED file. GEOSCOPE network for Chile:
+
+```bash
 curl -LOC - http://geoscope.ipgp.fr/seismes/SEED/G/2010/chil10058.seed.gz && gunzip chil10058.seed.gz
-'''
+```
 
+### 3. IASP91 Earth Model
+
+Download the IASP91 model of Earth:
+
+```bash
+curl -LOC https://ds.iris.edu/spudservice/data/9991804 -o iasp91.csv
+```
