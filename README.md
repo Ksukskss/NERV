@@ -1,5 +1,7 @@
 # NERV — Numerical Earth Ray Visualizer
 
+https://docs.google.com/presentation/d/1LTbex2gu9NkrWASXG-jDrI-VzhO9Dwuiu2QHmrWR9lk/edit?usp=sharing
+
 ## Structure
 
 ```text
