@@ -1,6 +1,19 @@
 # NERV — Numerical Earth Ray Visualizer
 
-https://docs.google.com/presentation/d/1LTbex2gu9NkrWASXG-jDrI-VzhO9Dwuiu2QHmrWR9lk/edit?usp=sharing
+### Ray-tracer is ready (Balthasar)!
+Presintation: https://docs.google.com/presentation/d/1LTbex2gu9NkrWASXG-jDrI-VzhO9Dwuiu2QHmrWR9lk/edit?usp=sharing
+
+A seismic ray-tracing and visualization tool that computes and animates the paths of P and S waves traveling through a 1-D Earth (IASP91 model). Given an earthquake hypocenter and a set of recording stations, it solves the two-point boundary-value problem — finding the exact take-off angle that connects the source to each station — and renders the resulting curved ray paths as a Manim animation. The numerically intensive ray tracing runs in C++ (exposed to Python via pybind11), while data parsing, geodesy, and visualization are handled in Python.
+
+## Concept
+
+The architectural solution and task division logic in the project are based on the mental model of the MAGI supercomputer (from the Neon Genesis Evangelion universe). The system has three independent computational modules that solve three different tasks:    
+#### MAGI-1: BALTAZAR (seismic ray tracer)
+>    Responsible for wave kinematics and dynamics. The module performs ray tracing and simulates the transfer of energy from the hypocentre to the Earth's surface through the heterogeneous mantle
+>    
+#### MAGI-2: CASPER (fault geometry and dynamics)  
+#### MAGI-3: MELCHIOR 
+>The module calculates (synthetic) seismograms using the kinematic parameters of the rays from Baltazar and the fault model from Casper.
 
 ## Structure
 
@@ -17,8 +30,8 @@ NERV/
 │   │
 │   ├── balthazar/          # THE PROPAGATION PATH ENGINE
 │   │   ├── __init__.py
-│   │   ├── geometry.py          # Spherical distance & azimuth calculations
-│   │   └── ray_tracer.py        # Shooting/bisection 1D layer tracer
+│   │   ├── ray_tracer.cpp       #ray tracer on c++
+│   │   └── ray_tracer.py        #python 
 │   │
 │   ├── casper/             # THE COORDINATE & ROTATION ENGINE
 │   │   ├── __init__.py
