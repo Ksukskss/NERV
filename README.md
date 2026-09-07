@@ -36,8 +36,6 @@ curl -LOC https://ds.iris.edu/spudservice/data/9991804 -o iasp91.csv
 
 Ensure your local data directory matches the paths referenced in the script or update the paths in the `# === FILE SETTINGS ===` section of the code.
 
-Plaintext
-
 ```
 Projects/
 └── NERV/
