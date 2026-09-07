@@ -22,7 +22,9 @@ env/
 .env
 .vscode/
 .idea/
-
+settings.json
+main.py
+.python-version
 # Local data files (heavy binaries and SCARDEC unpacks)
 data/fctoptsource_*
 data/*.seed
@@ -32,6 +34,27 @@ data/iasp91.csv
 data/IASP91.csv
 data/
 .obsidian/
+src/Balthasar/media/
+# --- Специфичные файлы твоего проекта NERV ---
+# Папка с тяжелыми видео и гифками от Manim
+media/
+
+# Временная папка сборки C++ расширения
+src/Balthasar/build/
+build/
+
+# Скомпилированные бинарники и библиотеки (shared objects)
+tracer
+*.so
+
+# --- Стандартные правила для Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/
+venv/
+ENV/
 
 # Keep the data directory tracking but ignore contents if needed
 # (Optional: if you want to keep an empty data folder in git)

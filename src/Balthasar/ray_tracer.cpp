@@ -12,13 +12,13 @@ namespace py = pybind11;
 const double R_EARTH = 6371.0;
 const double PI = std::acos(-1.0);
 
+//конструктор для объекта из Python
 struct Layer {
     double r1;
     double v1;
     double r2;
     double v2;
     
-    // Явный конструктор для безопасной инициализации из Pybind11
     Layer(double r1_val, double v1_val, double r2_val, double v2_val) 
         : r1(r1_val), v1(v1_val), r2(r2_val), v2(v2_val) {}
 };
@@ -35,9 +35,10 @@ struct RayResult {
     RayPath path;
 };
 
+//бред(брент)
 double brentq(std::function<double(double)> f, double a, double b, double tol = 1e-5, int max_iter = 100) {
     double fa = f(a), fb = f(b);
-    if (fa * fb >= 0) throw std::runtime_error("Root is not bracketed in brentq!");
+    //проверка на наличие корня в интервале
     if (std::abs(fa) < std::abs(fb)) { std::swap(a, b); std::swap(fa, fb); }
     
     double c = a, fc = fa, d = 0.0, e = 0.0;
@@ -58,6 +59,7 @@ double brentq(std::function<double(double)> f, double a, double b, double tol = 
         double cond1 = (3.0 * a + b) / 4.0;
         bool is_s_between = (s > std::min(cond1, b)) && (s < std::max(cond1, b));
         
+        //условие выбора между секущей и бисекцией
         if (!is_s_between ||
             (mflag && std::abs(s - b) >= std::abs(b - c) / 2.0) ||
             (!mflag && std::abs(s - b) >= std::abs(c - d) / 2.0) ||
@@ -76,13 +78,13 @@ double brentq(std::function<double(double)> f, double a, double b, double tol = 
     }
     return b;
 }
-
+//трассировка
 RayPath shoot_analytical(double takeoff_angle_deg, double source_depth, const std::vector<Layer>& layers, bool return_path = true) {
     if (layers.empty()) throw std::runtime_error("Earth model layers are empty!");
     
     double r_src = R_EARTH - source_depth;
-    
-    // Защита от выхода за границы модели Земли
+
+    //что бы не выходить в космос
     if (r_src > layers.front().r1) r_src = layers.front().r1;
     if (r_src < layers.back().r2) r_src = layers.back().r2;
 
@@ -101,10 +103,7 @@ RayPath shoot_analytical(double takeoff_angle_deg, double source_depth, const st
         }
     }
     
-    if (src_layer_idx == -1) {
-        throw std::runtime_error("Source depth does not match any layer.");
-    }
-    
+//вайбкод сказал так нужно что бы не ломалось когда источник на границе
     double theta_rad = takeoff_angle_deg * PI / 180.0;
     double p = (v_src > 0.0) ? (r_src * std::sin(theta_rad)) / v_src : 0.0;
     
@@ -120,6 +119,7 @@ RayPath shoot_analytical(double takeoff_angle_deg, double source_depth, const st
     double turn_r = -1.0;
     bool reflected_at_boundary = false;
     
+    //проход по слоям с вычислением углов
     for (int i = src_layer_idx; i < static_cast<int>(layers.size()); ++i) {
         double r1 = layers[i].r1;
         double v1 = layers[i].v1;
@@ -128,8 +128,6 @@ RayPath shoot_analytical(double takeoff_angle_deg, double source_depth, const st
         
         if (i == src_layer_idx && r_src < r1) { r1 = r_src; v1 = v_src; }
 
-        // Skip a source layer that has collapsed to zero thickness
-        // (happens when the source sits exactly on a layer boundary).
         if (std::abs(r1 - r2) < 1e-7) { continue; }
 
         if (v1 <= 0.0 || v2 <= 0.0) {
@@ -138,7 +136,7 @@ RayPath shoot_analytical(double takeoff_angle_deg, double source_depth, const st
         
         double zeta = std::log(v2 / v1) / std::log(r2 / r1);
         double denom = 1.0 - zeta;
-        // Защита от деления на ноль
+        //защита деления на 0
         if (std::abs(denom) < 1e-9) denom = (denom >= 0) ? 1e-9 : -1e-9;
         
         double arg1 = p * v1 / r1;
@@ -169,7 +167,7 @@ RayPath shoot_analytical(double takeoff_angle_deg, double source_depth, const st
             throw std::runtime_error("Ray penetrated the core completely."); 
         }
     }
-    
+    //обратная проходка 
     for (int j = turn_layer_idx; j >= 0; --j) {
         double r1_orig = layers[j].r1, v1_orig = layers[j].v1, r2_orig = layers[j].r2, v2_orig = layers[j].v2;
         if (v1_orig <= 0.0 || v2_orig <= 0.0) continue;
@@ -213,7 +211,7 @@ std::vector<RayResult> find_all_takeoff_angles(double shortest_target, double so
     
     std::vector<double> targets = {shortest_target};
     if (shortest_target != 180.0 && shortest_target != 0.0) targets.push_back(360.0 - shortest_target);
-    
+    //получение углов когла дельта проходит через целевое значение, и вычисление точного угла через брента
     std::vector<RayResult> results;
     for (double target : targets) {
         for (int i = 0; i < num_steps - 1; ++i) {
@@ -232,15 +230,14 @@ std::vector<RayResult> find_all_takeoff_angles(double shortest_target, double so
             }
         }
     }
-    
-    // Печатаем прямо в консоль для отладки
+
     if (!results.empty()) {
         std::cout << "C++: Target " << shortest_target << " deg: Found " << results.size() << " valid rays.\n";
     }
     
     return results;
 }
-
+//модуль для Python
 PYBIND11_MODULE(ray_tracer_cpp, m) {
     m.doc() = "C++ plugin for fast seismic ray tracing";
 

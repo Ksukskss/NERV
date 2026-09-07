@@ -154,16 +154,17 @@ class SeismicRayTracing(Scene):
 
         #набор для проверки
         stations = {
-            "Япония (+45°)": (45.0, GREEN),
-            "Япония (+60°)": (60.0, GREEN), "Япония (+90°)": (90.0, GREEN),
-            "Япония (+100°)": (100.0, GREEN), "Япония (+155°)": (155.0, GREEN),
-            "Япония (+170°)": (170.0, GREEN), "Япония (+180°)": (180.0, GREEN),
-            "Япония (-20°)": (-20.0, GREEN), "Япония (-50°)": (-50.0, GREEN),
-            "Япония (-67°)": (-67.0, GREEN), "Япония (-85°)": (-85.0, GREEN),
-            "Япония (-150°)": (-150.0, GREEN),
-            "Япония (-177°)": (-177.0, GREEN)
+            "ST1": (45.0, GREEN),
+            "ST2": (60.0, GREEN), "ST3": (90.0, GREEN),
+            "ST4": (100.0, GREEN), "ST5": (155.0, GREEN),
+            "ST6": (170.0, GREEN), "ST7": (180.0, GREEN),
+            "ST8": (-20.0, GREEN), "ST9": (-50.0, GREEN),
+            "ST10": (-67.0, GREEN), "ST11": (-85.0, GREEN),
+            "ST12": (-150.0, GREEN), "ST13": (-177.0, GREEN)
         }
-
+        global manim_stations_dict
+        manim_stations_dict.clear()
+        manim_stations_dict.update(stations)
         p_rays = []
         s_rays = []
         station_mobjects = []
